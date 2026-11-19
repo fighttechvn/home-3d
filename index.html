@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nhà Vườn Cấp 4</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/plan-2d.css">
+<link rel="stylesheet" href="styles/viewer-3d.css">
+<link rel="stylesheet" href="styles/furniture-editor.css">
+<link rel="stylesheet" href="styles/video-tour.css">
+<link rel="stylesheet" href="styles/xr.css">
+</head>
+<body>
+<div class="app" id="app">
+  <header class="app-header">
+    <div class="brand">
+      <h1>Nhà Vườn Cấp 4</h1>
+      <span class="brand-meta">7,0 × 19,3 m<span class="brand-meta-extra"> · 2 phòng ngủ · ≈ 135 m²</span></span>
+    </div>
+    <button class="language-switch" id="language-switch" type="button" aria-label="Ngôn ngữ"></button>
+    <div class="mode-switch" role="tablist" aria-label="Chế độ xem">
+      <button role="tab" id="tab-plan" aria-selected="false" aria-controls="plan-viewport">Bản vẽ 2D</button>
+      <button role="tab" id="tab-model" aria-selected="true" aria-controls="model-viewport">Mô hình 3D</button>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <!-- Bản vẽ 2D -->
+    <section class="viewport" id="plan-viewport" hidden aria-label="Mặt bằng 2D">
+      <div class="toolbar" id="plan-toolbar">
+        <button class="chip chip-icon" id="zoom-in-button" aria-label="Phóng to">+</button>
+        <button class="chip chip-icon" id="zoom-out-button" aria-label="Thu nhỏ">−</button>
+        <button class="chip" id="zoom-fit-button">Vừa khung</button>
+        <span class="toolbar-separator"></span>
+        <button class="chip" id="plan-furniture-toggle" aria-pressed="true"><span class="chip-dot"></span>Nội thất</button>
+        <button class="chip" id="plan-dimensions-toggle" aria-pressed="true"><span class="chip-dot"></span>Kích thước</button>
+        <span class="toolbar-separator"></span>
+        <button class="chip" data-furniture-editor-toggle aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-2.5A2.5 2.5 0 0 1 6.5 8h11a2.5 2.5 0 0 1 2.5 2.5V13M3 13h18v4H3zM5 17v2M19 17v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Sắp xếp đồ</button>
+      </div>
+      <div id="plan-host"></div>
+      <div class="scale-bar"><span id="scale-label">1 m</span><i id="scale-bar-line" style="width:40px"></i></div>
+      <div class="viewport-hint">Kéo để di chuyển · Cuộn hoặc chụm 2 ngón để phóng to · Chạm vào phòng để xem chi tiết</div>
+    </section>
+
+    <!-- Mô hình 3D -->
+    <section class="viewport" id="model-viewport" aria-label="Mô hình 3D">
+      <div id="room-labels"></div>
+      <div class="toolbar" id="model-toolbar">
+        <button class="chip" id="walk-toggle" aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="4" r="2.2" fill="currentColor"/><path d="M9.5 21.5l2.2-6.5 3 2.8v3.7M8.5 12.5l1.3-4.3 4 .8 2 3.6 3 1M9.8 8.2 7 10.6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Đi dạo</button>
+        <button class="chip walk-only" id="third-person-button" aria-pressed="true">Góc thứ 3</button>
+        <button class="chip walk-only" id="first-person-button" aria-pressed="false">Mắt nhân vật</button>
+        <span class="toolbar-separator"></span>
+        <button class="chip" data-camera-view="overview" aria-pressed="true">Toàn cảnh</button>
+        <button class="chip" data-camera-view="top-down" aria-pressed="false">Nhìn từ trên</button>
+        <button class="chip" data-camera-view="front-facade" aria-pressed="false">Mặt tiền</button>
+        <button class="chip" data-camera-view="garden" aria-pressed="false">Từ sân vườn</button>
+        <span class="toolbar-separator"></span>
+        <button class="chip" id="day-button" aria-pressed="true"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="currentColor"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Ngày</button>
+        <button class="chip" id="night-button" aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="currentColor"/></svg>Đêm</button>
+        <button class="chip night-only" id="indoor-lights-toggle" aria-pressed="true"><span class="chip-dot"></span>Đèn trong nhà</button>
+        <button class="chip night-only" id="outdoor-lights-toggle" aria-pressed="true"><span class="chip-dot"></span>Đèn sân vườn</button>
+        <span class="toolbar-separator"></span>
+        <button class="chip" id="realistic-toggle" aria-pressed="false"><span class="chip-dot"></span>Vật liệu thật</button>
+        <button class="chip" id="roof-toggle" aria-pressed="false"><span class="chip-dot"></span>Mái</button>
+        <button class="chip" id="cut-walls-toggle" aria-pressed="false"><span class="chip-dot"></span>Cắt tường</button>
+        <button class="chip" id="furniture-toggle" aria-pressed="true"><span class="chip-dot"></span>Nội thất</button>
+        <button class="chip" id="labels-toggle" aria-pressed="true"><span class="chip-dot"></span>Nhãn</button>
+        <span class="toolbar-separator"></span>
+        <button class="chip" data-furniture-editor-toggle aria-pressed="false"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 13v-2.5A2.5 2.5 0 0 1 6.5 8h11a2.5 2.5 0 0 1 2.5 2.5V13M3 13h18v4H3zM5 17v2M19 17v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Sắp xếp đồ</button>
+        <button class="chip" id="video-tour-button"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6.5" width="13" height="11" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 10.5l5-3v9l-5-3z" fill="currentColor"/></svg>Quay video</button>
+      </div>
+      <div class="viewport-hint" id="model-hint">Kéo để xoay · Cuộn hoặc chụm để thu phóng · Chuột phải hoặc 2 ngón để di chuyển · Bấm Đi dạo để điều khiển nhân vật</div>
+      <div class="viewer-toast" id="viewer-toast" hidden></div>
+      <div class="location-badge" id="location-badge" hidden></div>
+      <div class="minimap" id="minimap" hidden></div>
+      <div class="joystick" id="joystick" hidden><div class="joystick-knob" id="joystick-knob"></div></div>
+    </section>
+
+    <!-- Thanh đồ đang chọn (chế độ sắp xếp đồ) -->
+    <div class="selection-bar" id="selection-bar" hidden role="toolbar" aria-label="Đồ đang chọn">
+      <span class="selection-name" id="selection-name"></span>
+      <button id="rotate-90-button">Xoay 90°</button>
+      <button id="rotate-15-button">Xoay 15°</button>
+      <button id="duplicate-button">Nhân bản</button>
+      <button id="hide-button">Ẩn</button>
+      <button id="delete-button" class="is-danger">Xóa</button>
+      <button id="deselect-button" aria-label="Bỏ chọn">Xong</button>
+    </div>
+  </main>
+
+  <aside class="side-panel" id="side-panel">
+    <section id="room-section">
+      <p class="section-label">Các phòng</p>
+      <ul class="room-list" id="room-list"></ul>
+    </section>
+    <section id="editor-section" hidden>
+      <p class="section-label">Thư viện đồ dùng</p>
+      <p class="editor-intro">Chọn một món để đặt vào giữa khung nhìn, sau đó kéo nó tới chỗ muốn đặt (trên bản vẽ 2D hoặc trong 3D).</p>
+      <div class="library-categories" id="library-categories"></div>
+      <div class="library-grid" id="library-grid"></div>
+      <p class="section-label" style="margin-top:18px">Đồ trong nhà <span id="furniture-count"></span></p>
+      <ul class="furniture-list" id="furniture-list"></ul>
+      <div class="editor-footer"><button id="reset-layout-button">Khôi phục theo bản vẽ</button><span class="save-status" id="save-status" aria-live="polite"></span></div>
+    </section>
+    <section class="room-card" id="room-card" hidden aria-live="polite"></section>
+    <section class="specs-section">
+      <p class="section-label">Thông số ước lượng</p>
+      <dl class="spec-list">
+        <dt>Kích thước phủ bì</dt><dd>7.000 × 19.300 mm</dd>
+        <dt>Diện tích xây dựng</dt><dd>≈ 135,1 m²</dd>
+        <dt>Chiều cao trần</dt><dd>3.400 mm</dd>
+        <dt>Bo góc tường</dt><dd>R350</dd>
+        <dt>Tường bao / ngăn</dt><dd>200 / 120 mm</dd>
+      </dl>
+    </section>
+    <p class="estimate-note">Kích thước được đo lại từ bản vẽ trong video, lấy mốc là kích thước 3000 mm ghi trên bản vẽ. Sai số khoảng ±10 cm. Mái bằng và sân vườn được dựng thêm để dễ hình dung.</p>
+  </aside>
+
+  <!-- Hộp thoại quay video -->
+  <div class="video-tour" id="video-tour" hidden role="dialog" aria-modal="true" aria-labelledby="video-tour-title">
+    <div class="video-tour-dialog">
+      <div class="video-tour-controls is-spread"><h2 id="video-tour-title">Video tham quan nhà</h2><button id="video-tour-close">Đóng</button></div>
+      <div class="video-tour-screen" id="video-tour-screen"></div>
+      <div class="video-tour-progress"><i id="video-tour-progress-bar"></i></div>
+      <p class="video-tour-message" id="video-tour-message"></p>
+      <div class="video-tour-controls">
+        <label for="video-tour-resolution">Chất lượng</label>
+        <select id="video-tour-resolution"><option value="1080">1080p · 1920×1080</option><option value="720">720p · 1280×720</option></select>
+        <label><input type="checkbox" id="video-tour-realistic"> Vật liệu thật</label>
+        <label><input type="checkbox" id="video-tour-night"> Ban đêm</label>
+        <button id="video-tour-preview">Xem trước</button>
+        <button id="video-tour-record" class="is-primary">Quay &amp; xuất video</button>
+        <button id="video-tour-stop" hidden>Dừng</button>
+        <button id="video-tour-save" class="is-primary" hidden>Lưu video</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Three.js 0.147 (bản UMD, tạo biến toàn cục THREE) đóng gói sẵn trong vendor/, phải tải trước các module -->
+<script src="vendor/three/three.min.js"></script>
+<script src="vendor/three/OrbitControls.js"></script>
+<script type="module" src="scripts/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+/* Bản vẽ mặt bằng 2D (SVG, đơn vị cm). */
+#plan-viewport { touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
+#plan-viewport.is-dragging { cursor: grabbing; }
+#plan-host { position: absolute; inset: 0; }
+#plan-host svg { display: block; width: 100%; height: 100%; }
+
+.scale-bar {
+  position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); bottom: 12px; z-index: 2; pointer-events: none;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 3px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--plan-dimension);
+}
+.scale-bar i { display: block; height: 6px; border: 1.5px solid var(--plan-dimension); border-top: 0; }
+
+.room-shape { fill: var(--plan-floor-tile); cursor: pointer; transition: fill .15s; }
+.room-shape.wood { fill: var(--plan-floor-wood); }
+.room-shape.wet { fill: var(--plan-floor-wet); }
+.room-shape.porch, .room-shape.deck { fill: var(--plan-floor-outdoor); }
+.room-shape:hover { fill: var(--plan-room-hover); }
+.room-shape.is-selected { fill: var(--plan-room-selected); }
+.wall-shape { fill: var(--plan-wall); }
+
+.axis-line { stroke: var(--color-axis); stroke-width: 1.1; stroke-dasharray: 28 7 4 7; opacity: .55; fill: none; }
+.axis-bubble circle { fill: var(--plan-background); stroke: var(--color-axis); stroke-width: 2; }
+.axis-bubble text { fill: var(--color-axis); font-family: var(--font-mono); font-size: 24px; font-weight: 500; text-anchor: middle; dominant-baseline: central; }
+.dimension line { stroke: var(--plan-dimension); stroke-width: 1.1; }
+.dimension .dimension-tick { stroke-width: 2.2; }
+.dimension text { fill: var(--plan-dimension); font-family: var(--font-mono); font-size: 19px; text-anchor: middle; }
+.dimension-extension { stroke: var(--plan-dimension); stroke-width: 1; }
+
+.symbol-fill { fill: var(--plan-background); stroke: var(--plan-furniture); stroke-width: 1.3; }
+.symbol-solid { fill: var(--plan-furniture); }
+.symbol-line { fill: none; stroke: var(--plan-furniture); stroke-width: 1.1; }
+.symbol-hatch { fill: url(#wardrobe-hatch); stroke: var(--plan-furniture); stroke-width: 1.3; }
+.symbol-dashed { fill: none; stroke: var(--plan-furniture); stroke-width: 1.1; stroke-dasharray: 6 5; }
+.hatch-line { stroke: var(--plan-furniture); stroke-width: 1.2; }
+
+.window-line { stroke: var(--plan-line); stroke-width: 1.2; fill: none; }
+.window-fill { fill: var(--plan-background); }
+.door-leaf { stroke: var(--plan-line); stroke-width: 3.2; stroke-linecap: round; }
+.door-swing { stroke: var(--plan-line); stroke-width: 1; fill: none; }
+.opening-line { stroke: var(--plan-line); stroke-width: 1; stroke-dasharray: 6 5; fill: none; }
+.folding-door { stroke: var(--plan-line); stroke-width: 3.5; fill: none; stroke-linejoin: round; }
+
+.room-name { fill: var(--plan-label); font-family: var(--font-ui); font-weight: 600; letter-spacing: .06em; text-anchor: middle; }
+.room-area { fill: var(--plan-dimension); font-family: var(--font-mono); text-anchor: middle; }
+.plan-note { fill: var(--plan-furniture); font-family: var(--font-ui); font-size: 15px; text-anchor: middle; dominant-baseline: central; }
+.site-label { fill: var(--color-leaf); font-family: var(--font-ui); font-weight: 600; font-size: 22px; letter-spacing: .18em; text-anchor: middle; dominant-baseline: central; }
+.radius-note text { fill: var(--plan-dimension); font-family: var(--font-mono); font-size: 15px; }
+.radius-note line { stroke: var(--plan-dimension); stroke-width: 1; }
+.furniture-tag { fill: var(--plan-furniture); font-family: var(--font-ui); font-size: 14px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+
+.no-pointer { pointer-events: none; }
+.hide-furniture .furniture-layer { display: none; }
+.hide-dimensions .dimension-layer { display: none; }
+
+@media (prefers-reduced-motion: reduce) { .room-shape { transition: none; } }

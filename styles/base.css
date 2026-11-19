@@ -1,0 +1,180 @@
+/* Thuộc tính hidden luôn thắng các quy tắc display của component (hộp thoại video, thanh chọn đồ…). */
+[hidden] { display: none !important; }
+
+/* Khung ứng dụng: thanh tiêu đề ở trên; khung xem (bản vẽ 2D hoặc mô hình 3D) chiếm phần còn lại,
+   bên cạnh là bảng phòng. Trên điện thoại bảng phòng chuyển xuống dưới. */
+:root {
+  --color-paper: #e9eeec;
+  --color-sheet: #fbfcfb;
+  --color-ink: #1b2425;
+  --color-ink-muted: #58635f;
+  --color-rule: #d2d9d6;
+  --color-oak: #9c5c26;
+  --color-oak-ink: #ffffff;
+  --color-oak-soft: #f2e4d4;
+  --color-leaf: #46744a;
+  --color-axis: #b4473f;
+  --color-chip: #ffffffe6;
+  --color-chip-border: #cfd6d3;
+  --plan-background: #fbfcfb;
+  --plan-wall: #1d2526;
+  --plan-line: #2a3334;
+  --plan-furniture: #76817f;
+  --plan-floor-wood: #f4e9dc;
+  --plan-floor-tile: #f0f2f0;
+  --plan-floor-wet: #e3ecef;
+  --plan-floor-outdoor: #e6eee0;
+  --plan-room-hover: #ece4d8;
+  --plan-room-selected: #ecd3b6;
+  --plan-dimension: #4c5654;
+  --plan-label: #1b2425;
+  --font-ui: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-paper: #0f1414; --color-sheet: #161c1c; --color-ink: #e2e8e6; --color-ink-muted: #97a39f; --color-rule: #29312f;
+    --color-oak: #d99a5e; --color-oak-ink: #1b1207; --color-oak-soft: #3a2a1a; --color-leaf: #8fbd87; --color-axis: #e0786d;
+    --color-chip: #1b2222e6; --color-chip-border: #333d3b;
+    --plan-background: #141a1a; --plan-wall: #dbe3e0; --plan-line: #c6cfcc; --plan-furniture: #7d8a87;
+    --plan-floor-wood: #261f17; --plan-floor-tile: #1a2121; --plan-floor-wet: #17232a; --plan-floor-outdoor: #172118;
+    --plan-room-hover: #2a2620; --plan-room-selected: #4a3420; --plan-dimension: #a3aeab; --plan-label: #e2e8e6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --color-paper: #0f1414; --color-sheet: #161c1c; --color-ink: #e2e8e6; --color-ink-muted: #97a39f; --color-rule: #29312f;
+  --color-oak: #d99a5e; --color-oak-ink: #1b1207; --color-oak-soft: #3a2a1a; --color-leaf: #8fbd87; --color-axis: #e0786d;
+  --color-chip: #1b2222e6; --color-chip-border: #333d3b;
+  --plan-background: #141a1a; --plan-wall: #dbe3e0; --plan-line: #c6cfcc; --plan-furniture: #7d8a87;
+  --plan-floor-wood: #261f17; --plan-floor-tile: #1a2121; --plan-floor-wet: #17232a; --plan-floor-outdoor: #172118;
+  --plan-room-hover: #2a2620; --plan-room-selected: #4a3420; --plan-dimension: #a3aeab; --plan-label: #e2e8e6;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { height: 100%; }
+body {
+  height: 100%; margin: 0; overflow: hidden;
+  background: var(--color-paper); color: var(--color-ink);
+  font-family: var(--font-ui); font-size: 14px; line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--color-oak); outline-offset: 2px; }
+
+/* ---------- khung ứng dụng ---------- */
+.app { height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) 340px; grid-template-rows: auto minmax(0, 1fr); }
+.app-header {
+  grid-column: 1 / -1; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--color-sheet); border-bottom: 1px solid var(--color-rule);
+}
+.brand { display: flex; flex-direction: column; min-width: 0; margin-right: auto; }
+.brand h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: -.01em; line-height: 1.2; text-wrap: balance; }
+.brand-meta { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-muted); font-variant-numeric: tabular-nums; }
+.language-switch, .home-link {
+  border: 1px solid var(--color-rule); background: var(--color-paper); color: var(--color-ink-muted); border-radius: 999px;
+  padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none;
+}
+.language-switch:hover, .home-link:hover { color: var(--color-ink); }
+.language-switch:empty { display: none; }
+/* Liên kết về trang giới thiệu, chỉ có khi trang được nhúng trên landing (build-studio.sh chèn vào). */
+.home-link { order: -1; }
+.mode-switch { display: inline-flex; padding: 3px; border-radius: 999px; background: var(--color-paper); border: 1px solid var(--color-rule); }
+.mode-switch button { border: 0; background: transparent; padding: 7px 14px; border-radius: 999px; font-weight: 600; font-size: 13px; cursor: pointer; color: var(--color-ink-muted); white-space: nowrap; }
+.mode-switch button[aria-selected="true"] { background: var(--color-ink); color: var(--color-sheet); }
+
+.stage { position: relative; min-width: 0; min-height: 0; overflow: hidden; background: var(--plan-background); }
+.viewport { position: absolute; inset: 0; }
+
+/* ---------- thanh công cụ dạng chip ---------- */
+.toolbar {
+  position: absolute; top: 10px; left: max(12px, env(safe-area-inset-left, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
+  display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; pointer-events: none; z-index: 3; padding-bottom: 2px;
+}
+.toolbar::-webkit-scrollbar { display: none; }
+.toolbar > * { pointer-events: auto; }
+.toolbar-separator { flex: 0 0 1px; background: var(--color-chip-border); margin: 4px 2px; }
+.chip {
+  flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
+  border-radius: 999px; border: 1px solid var(--color-chip-border); background: var(--color-chip);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; color: var(--color-ink);
+}
+.chip:hover { border-color: var(--color-ink-muted); }
+.chip[aria-pressed="true"] { background: var(--color-oak); border-color: var(--color-oak); color: var(--color-oak-ink); }
+.chip[aria-busy="true"] { opacity: .6; cursor: progress; }
+.chip-icon { width: 32px; padding: 0; justify-content: center; font-size: 16px; font-weight: 500; }
+.chip-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .35; }
+.chip[aria-pressed="true"] .chip-dot { opacity: 1; }
+.chip svg { flex: 0 0 auto; }
+
+.viewport-hint {
+  position: absolute; left: max(12px, env(safe-area-inset-left, 0px)); bottom: 12px; z-index: 2; max-width: calc(100% - 24px);
+  font-size: 12px; color: var(--color-ink-muted); background: var(--color-chip); border: 1px solid var(--color-chip-border);
+  border-radius: 8px; padding: 5px 9px; pointer-events: none;
+}
+
+/* ---------- bảng bên ---------- */
+.side-panel {
+  background: var(--color-sheet); border-left: 1px solid var(--color-rule); overflow: auto; min-height: 0;
+  padding-block: 16px; padding-left: 16px; padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 18px;
+}
+.section-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-ink-muted); margin: 0 0 8px; }
+.room-list { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.room-button {
+  width: 100%; display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 10px;
+  padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; text-align: left; cursor: pointer;
+}
+.room-button:hover { background: var(--color-paper); }
+.room-button[aria-current="true"] { background: var(--color-oak-soft); }
+.room-button-name { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.room-button-area { font-family: var(--font-mono); font-size: 12px; color: var(--color-ink-muted); font-variant-numeric: tabular-nums; }
+.floor-swatch { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--color-rule); }
+.floor-swatch.wood { background: var(--plan-floor-wood); }
+.floor-swatch.tile { background: var(--plan-floor-tile); }
+.floor-swatch.wet { background: var(--plan-floor-wet); }
+.floor-swatch.porch, .floor-swatch.deck { background: var(--plan-floor-outdoor); }
+
+.room-card { border: 1px solid var(--color-rule); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--color-sheet); }
+.room-card h2 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.room-facts { display: flex; flex-wrap: wrap; gap: 6px; }
+.room-fact { font-family: var(--font-mono); font-size: 12px; padding: 3px 8px; border-radius: 6px; background: var(--color-paper); color: var(--color-ink); font-variant-numeric: tabular-nums; }
+.room-fact.is-text { font-family: var(--font-ui); }
+.room-card p { margin: 0; color: var(--color-ink-muted); max-width: 60ch; }
+.room-card-action { align-self: flex-start; border: 0; border-radius: 999px; background: var(--color-ink); color: var(--color-sheet); padding: 8px 14px; font-weight: 600; font-size: 13px; cursor: pointer; }
+
+.spec-list { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
+.spec-list dt { color: var(--color-ink-muted); font-size: 13px; }
+.spec-list dd { margin: 0; font-family: var(--font-mono); font-size: 12.5px; font-variant-numeric: tabular-nums; text-align: right; }
+.estimate-note { font-size: 12.5px; color: var(--color-ink-muted); margin: 0; border-top: 1px solid var(--color-rule); padding-top: 12px; max-width: 60ch; }
+
+@media (max-width: 820px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+  .app-header { gap: 10px; padding-block: 8px; flex-wrap: nowrap; }
+  .brand-meta-extra { display: none; }
+  .brand h1 { font-size: 16px; }
+  .language-switch, .home-link { padding: 5px 9px; }
+  .mode-switch button { padding: 6px 11px; }
+  .side-panel { border-left: 0; border-top: 1px solid var(--color-rule); max-height: 36vh; padding-block: 10px 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); gap: 12px; }
+  .side-panel .section-label { display: none; }
+  .room-list { flex-direction: row; overflow-x: auto; gap: 6px; scrollbar-width: none; margin-inline: -4px; padding-inline: 4px; }
+  .room-list::-webkit-scrollbar { display: none; }
+  .room-list li { flex: 0 0 auto; }
+  .room-button { grid-template-columns: 10px auto auto; gap: 7px; padding: 6px 11px; border: 1px solid var(--color-rule); border-radius: 999px; }
+  .floor-swatch { width: 10px; height: 10px; }
+  .room-card { padding: 12px; gap: 8px; }
+  .room-card h2 { font-size: 15px; }
+  .specs-section, .estimate-note { display: none; }
+  .viewport-hint { display: none; }
+}
+/* Điện thoại hẹp: nút chuyển 2D/3D xuống hàng thứ hai để tiêu đề, liên kết về trang chủ và nút ngôn ngữ không bị ép. */
+@media (max-width: 520px) {
+  .app-header { flex-wrap: wrap; row-gap: 8px; }
+  .brand { flex: 1 1 auto; }
+  .brand-meta { white-space: nowrap; }
+  .mode-switch { flex: 1 0 100%; }
+  .mode-switch button { flex: 1; }
+}
